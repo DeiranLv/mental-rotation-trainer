@@ -1,0 +1,23 @@
+{
+  "home": {
+    "title": "Mentālās rotācijas treniņš",
+    "consent": "Es piekrītu piedalīties pētījumā",
+    "startButton": "Sākt treniņu"
+  },
+  "task": {
+    "next": "Nākamais uzdevums"
+  },
+  "summary": {
+    "title": "Sesijas rezultāti",
+    "surveyButton": "Aizpildīt anketu",
+    "dashboardButton": "Uz paneli"
+  },
+  "dashboard": {
+    "title": "Mans progress"
+  },
+  "nav": {
+    "home": "Sākums",
+    "dashboard": "Panelis",
+    "userId": "ID"
+  }
+}

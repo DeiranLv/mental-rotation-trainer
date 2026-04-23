@@ -1,15 +1,25 @@
-import ThreeScene from './components/ThreeScene';
+import { BrowserRouter, useRoutes } from 'react-router-dom';
+import routes from './routes/routes';
+import Navbar from './components/Navbar';
 import './App.css';
+
+function AppRoutes() {
+  return useRoutes(routes);
+}
+
+function AppLayout() {
+  return (
+    <>
+      <Navbar />
+      <AppRoutes />
+    </>
+  );
+}
 
 export default function App() {
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>Mental Rotation Trainer</h1>
-      </header>
-      <main className="scene-container">
-        <ThreeScene />
-      </main>
-    </div>
+    <BrowserRouter>
+      <AppLayout />
+    </BrowserRouter>
   );
 }
