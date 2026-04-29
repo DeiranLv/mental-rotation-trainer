@@ -1,8 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 
-// Load values from environment variables — never commit real keys.
-// Copy .env.example to .env and fill in your Firebase project credentials.
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -14,3 +13,22 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const auth = getAuth(app);
+
+// Sign in anonymously on app load. The Firebase UID is used as the userId
+// throughout the app — stored in localStorage for fast synchronous access.
+export function initAuth() {
+  return new Promise((resolve) => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        localStorage.setItem('mrt_user_id', user.uid);
+        resolve(user.uid);
+      } else {
+        signInAnonymously(auth).then(({ user }) => {
+          localStorage.setItem('mrt_user_id', user.uid);
+          resolve(user.uid);
+        });
+      }
+    });
+  });
+}

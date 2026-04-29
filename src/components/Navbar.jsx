@@ -1,9 +1,9 @@
 import { NavLink } from 'react-router-dom';
 import { t } from '../i18n/i18n';
-import { getOrCreateUserId } from '../utils/storage';
+import { getUserId } from '../utils/storage';
 
 export default function Navbar() {
-  const userId = getOrCreateUserId();
+  const userId = getUserId();
 
   return (
     <nav className="navbar">

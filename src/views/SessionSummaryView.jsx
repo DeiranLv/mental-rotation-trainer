@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { t } from '../i18n/i18n';
-import { getResearchConsent, getOrCreateUserId } from '../utils/storage';
+import { getResearchConsent, getUserId } from '../utils/storage';
 
 const SURVEY_BASE_URL = 'https://www.questionpro.com/t/your-survey-id';
 
 export default function SessionSummaryView() {
   const navigate = useNavigate();
   const hasConsent = getResearchConsent();
-  const userId = getOrCreateUserId();
+  const userId = getUserId();
 
   function handleSurvey() {
     const url = `${SURVEY_BASE_URL}?uid=${encodeURIComponent(userId)}`;
