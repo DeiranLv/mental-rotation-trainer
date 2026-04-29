@@ -1,23 +1,91 @@
 {
   "home": {
-    "title": "Mentālās rotācijas treniņš",
+    "title": "Interaktīvā mentālās rotācijas platforma",
+    "subtitle": "Mentālās rotācijas trenēšana ar 3D objektiem",
+    "intro": "Jūs redzēsiet divus 3D objektus. Atbildiet, vai tie ir vienādi (rotēti), vai atšķirīgi (spoguļattēls). Atbildiet pēc iespējas ātrāk un precīzi.",
     "consent": "Es piekrītu piedalīties pētījumā",
-    "startButton": "Sākt treniņu"
+    "startButton": "Sākt"
+  },
+  "instructions": {
+    "title": "Kā veikt uzdevumu?",
+    "intro": "Katrā uzdevumā jums tiks parādīti divi trīsdimensionāli objekti. Jūsu uzdevums ir noteikt, vai tie ir vienādi (tikai rotēti telpā), vai atšķirīgi (spoguļattēls).",
+    "sameLabel": "VIENĀDI",
+    "sameDesc": "Vienādi objekti, bet rotēti telpā.",
+    "differentLabel": "ATŠĶIRĪGI",
+    "differentDesc": "Spoguļattēla objekti, kas nav vienādi, pat ja tos rotē.",
+    "keysTitle": "Kā atbildēt?",
+    "keyLeft": "Kreisā bultiņa",
+    "keyLeftAction": "Atšķirīgi",
+    "keyRight": "Labā bultiņa",
+    "keyRightAction": "Vienādi",
+    "speedNote": "Atbildiet pēc iespējas ātrāk, saglabājot precizitāti.",
+    "practiceButton": "Sākt izmēģinājuma uzdevumus"
+  },
+  "practice": {
+    "title": "Izmēģinājuma uzdevumi",
+    "counter": "Izmēģinājuma uzdevums {{current}} / {{total}}",
+    "correct": "Pareizi!",
+    "incorrect": "Nepareizi",
+    "correctAnswer": "Pareizā atbilde: {{answer}}",
+    "same": "Vienādi",
+    "different": "Atšķirīgi",
+    "demoNote": "Skatieties, kā objekti sakrīt...",
+    "nextButton": "Nākamais",
+    "startExperiment": "Sākt eksperimentu"
   },
   "task": {
-    "next": "Nākamais uzdevums"
+    "counter": "Uzdevums {{current}} / {{total}}",
+    "sameButton": "Vienādi",
+    "differentButton": "Atšķirīgi",
+    "timeout": "Laiks beidzies — pārejam tālāk"
   },
   "summary": {
     "title": "Sesijas rezultāti",
+    "accuracy": "Precizitāte",
+    "avgRT": "Vidējais reakcijas laiks",
+    "ms": "ms",
     "surveyButton": "Aizpildīt anketu",
     "dashboardButton": "Uz paneli"
   },
+  "modeSelect": {
+    "title": "Izvēlieties režīmu",
+    "interactiveTitle": "Interaktīvais treniņš",
+    "interactiveDesc": "Rotējiet objektus sinhroni, lai labāk izprastu telpiskās attiecības.",
+    "repeatTitle": "Atkārtots tests",
+    "repeatDesc": "Klasiskais tests — tāds pats kā pirmajā sesijā.",
+    "interactiveButton": "Interaktīvais režīms",
+    "repeatButton": "Atkārtots tests"
+  },
+  "interactive": {
+    "title": "Interaktīvais treniņš",
+    "counter": "Uzdevums {{current}} / {{total}}",
+    "hint": "Velciet, lai rotētu abus objektus vienlaikus",
+    "resetButton": "Atiestatīt",
+    "sameButton": "Vienādi",
+    "differentButton": "Atšķirīgi"
+  },
+  "feedback": {
+    "title": "Jūsu viedoklis par interaktīvo režīmu",
+    "ratingLabel": "Cik noderīgs bija interaktīvais režīms? (1–10)",
+    "commentLabel": "Komentārs (neobligāts)",
+    "commentPlaceholder": "Jūsu iespaidi, grūtības vai novērojumi...",
+    "submitButton": "Nosūtīt",
+    "skipButton": "Izlaist"
+  },
   "dashboard": {
-    "title": "Mans progress"
+    "title": "Mans progress",
+    "noData": "Vēl nav pieejami sesiju dati.",
+    "sessionLabel": "Sesija {{n}}",
+    "accuracy": "Precizitāte",
+    "avgRT": "Vidējais reakcijas laiks (ms)",
+    "mode": "Režīms"
   },
   "nav": {
     "home": "Sākums",
     "dashboard": "Panelis",
     "userId": "ID"
+  },
+  "footer": {
+    "line": "Latvijas Universitāte · Maģistra darbs · 2025/2026"
   }
 }
