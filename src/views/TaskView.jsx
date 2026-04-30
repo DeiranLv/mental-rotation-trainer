@@ -1,26 +1,26 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import * as THREE from 'three';
 import { t } from '../i18n/i18n';
 import MRScene from '../components/MRScene';
 import { experimentTrials, getShapeCubes } from '../data/experimentTrials';
 import { generateTrials } from '../data/trialGenerator';
-import { mirrorCubes } from '../utils/shapeUtils';
 import { getUserId } from '../utils/storage';
 
 const ITI_MS = 500;
 const TIMEOUT_MS = 30000;
 const MIN_RT_MS = 200;
+const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
 function buildCubes(trial) {
   const base = getShapeCubes(trial.objectId);
-  const right = trial.isIdentical ? base : mirrorCubes(base);
+  const right = trial.isIdentical ? base : getShapeCubes(trial.objectId + '_mirror');
+  // Rotate the right object as a rigid body using a quaternion — the same
+  // mechanism used in interactive mode. MRObject will centre the cubes then
+  // apply this quaternion to the whole group so all cubes move together.
   const angle = (trial.rotationAngle * Math.PI) / 180;
-  const rotated = right.map(({ x, y, z }) => ({
-    x: x * Math.cos(angle) - z * Math.sin(angle),
-    y,
-    z: x * Math.sin(angle) + z * Math.cos(angle),
-  }));
-  return { leftCubes: base, rightCubes: rotated };
+  const rightQuaternion = new THREE.Quaternion().setFromAxisAngle(Y_AXIS, angle);
+  return { leftCubes: base, rightCubes: right, rightQuaternion };
 }
 
 export default function TaskView() {
@@ -41,7 +41,7 @@ export default function TaskView() {
   const answered = useRef(false);
 
   const trial = trials[index];
-  const { leftCubes, rightCubes } = buildCubes(trial);
+  const { leftCubes, rightCubes, rightQuaternion } = buildCubes(trial);
   const userId = getUserId();
 
   // ITI → task transition
@@ -127,7 +127,7 @@ export default function TaskView() {
         className="scene-container"
         style={{ opacity: phase === 'task' ? 1 : 0 }}
       >
-        <MRScene leftCubes={leftCubes} rightCubes={rightCubes} />
+        <MRScene leftCubes={leftCubes} rightCubes={rightCubes} rightQuaternion={rightQuaternion} />
       </div>
 
       <div

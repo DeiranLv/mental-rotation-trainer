@@ -9,20 +9,18 @@ export default function ModeSelectView() {
       <h1>{t('modeSelect.title')}</h1>
 
       <div className="mode-cards">
-        <div className="mode-card">
+        <div className="mode-card" role="button" tabIndex={0}
+          onClick={() => navigate('/train-interactive')}
+          onKeyDown={(e) => e.key === 'Enter' && navigate('/train-interactive')}>
           <h2>{t('modeSelect.interactiveTitle')}</h2>
           <p>{t('modeSelect.interactiveDesc')}</p>
-          <button onClick={() => navigate('/train-interactive')}>
-            {t('modeSelect.interactiveButton')}
-          </button>
         </div>
 
-        <div className="mode-card">
+        <div className="mode-card" role="button" tabIndex={0}
+          onClick={() => navigate('/train', { state: { mode: 'repeat' } })}
+          onKeyDown={(e) => e.key === 'Enter' && navigate('/train', { state: { mode: 'repeat' } })}>
           <h2>{t('modeSelect.repeatTitle')}</h2>
           <p>{t('modeSelect.repeatDesc')}</p>
-          <button onClick={() => navigate('/train', { state: { mode: 'repeat' } })}>
-            {t('modeSelect.repeatButton')}
-          </button>
         </div>
       </div>
     </div>

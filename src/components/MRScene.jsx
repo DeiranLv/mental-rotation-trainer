@@ -22,8 +22,9 @@ function useIsMobile() {
   return isMobile;
 }
 
-export default function MRScene({ leftCubes, rightCubes, quaternion = null, quaternionRef, rightQuaternion, highlight = false, compact = false }) {
+export default function MRScene({ leftCubes, rightCubes, quaternion = null, quaternionRef, rightQuaternion, rightQuaternionRef, highlight = false, compact = false }) {
   const rightQ = rightQuaternion !== undefined ? rightQuaternion : quaternion;
+  const rightQRef = rightQuaternionRef !== undefined ? rightQuaternionRef : quaternionRef;
   const isMobile = useIsMobile();
 
   // `compact` is used for small preview scenes (e.g. instruction examples)
@@ -61,7 +62,7 @@ export default function MRScene({ leftCubes, rightCubes, quaternion = null, quat
 
       {/* Right object */}
       <group position={[spread, 0, 0]}>
-        <MRObject cubes={rightCubes} quaternion={rightQ} quaternionRef={quaternionRef} highlight={highlight} />
+        <MRObject cubes={rightCubes} quaternion={rightQ} quaternionRef={rightQRef} highlight={highlight} />
       </group>
     </Canvas>
   );

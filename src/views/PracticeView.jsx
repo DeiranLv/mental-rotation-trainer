@@ -5,20 +5,15 @@ import { t } from '../i18n/i18n';
 import MRScene from '../components/MRScene';
 import { generatePracticeTrials } from '../data/trialGenerator';
 import { getShapeCubes } from '../data/experimentTrials';
-import { mirrorCubes } from '../utils/shapeUtils';
 
+const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
 function buildCubes(trial) {
   const base = getShapeCubes(trial.objectId);
-  const right = trial.isIdentical ? base : mirrorCubes(base);
-  // Apply the stimulus rotation angle to the right object's initial display
+  const right = trial.isIdentical ? base : getShapeCubes(trial.objectId + '_mirror');
   const angle = (trial.rotationAngle * Math.PI) / 180;
-  const rotated = right.map(({ x, y, z }) => ({
-    x: x * Math.cos(angle) - z * Math.sin(angle),
-    y,
-    z: x * Math.sin(angle) + z * Math.cos(angle),
-  }));
-  return { leftCubes: base, rightCubes: rotated };
+  const rightInitialQ = new THREE.Quaternion().setFromAxisAngle(Y_AXIS, angle);
+  return { leftCubes: base, rightCubes: right, rightInitialQ };
 }
 
 export default function PracticeView() {
@@ -33,7 +28,7 @@ export default function PracticeView() {
   const demoFrame = useRef(null);
 
   const trial = trials[index];
-  const { leftCubes, rightCubes } = buildCubes(trial);
+  const { leftCubes, rightCubes, rightInitialQ } = buildCubes(trial);
   const total = trials.length;
 
   const handleAnswer = useCallback((response) => {
@@ -65,21 +60,21 @@ export default function PracticeView() {
   function startDemo() {
     setPhase('demo');
     const Y = new THREE.Vector3(0, 1, 0);
-    // Right object cubes are pre-baked at +rotationAngle.
-    // Applying this correction makes the group look at 0° (same as left).
-    const correction = -(trial.rotationAngle * Math.PI) / 180;
+    const initialAngle = (trial.rotationAngle * Math.PI) / 180;
     const FULL_SPIN = Math.PI * 2;
     const STEP = 0.03; // ~1.7° per frame at 60 fps
     let spin = 0;
 
     function animate() {
       spin = Math.min(spin + STEP, FULL_SPIN);
-      const progress = spin / FULL_SPIN; // 0 → 1
+      const progress = spin / FULL_SPIN;
 
-      // Left spins from 0 → 2π → back to identity
+      // Left spins a full circle from identity back to identity
       const lQ = new THREE.Quaternion().setFromAxisAngle(Y, spin);
-      // Right spins the same, plus gradually applies correction so it lands aligned
-      const rQ = new THREE.Quaternion().setFromAxisAngle(Y, spin + correction * progress);
+      // Right starts at initialAngle and converges to match left by the end
+      const rQ = new THREE.Quaternion().setFromAxisAngle(
+        Y, spin + initialAngle * (1 - progress)
+      );
 
       setLeftDemoQ(lQ);
       setRightDemoQ(rQ);
@@ -87,7 +82,6 @@ export default function PracticeView() {
       if (spin < FULL_SPIN) {
         demoFrame.current = requestAnimationFrame(animate);
       } else {
-        // Hold at final aligned position
         setPhase('done');
       }
     }
@@ -120,7 +114,7 @@ export default function PracticeView() {
           leftCubes={leftCubes}
           rightCubes={rightCubes}
           quaternion={phase === 'demo' || phase === 'done' ? leftDemoQ : null}
-          rightQuaternion={phase === 'demo' || phase === 'done' ? rightDemoQ : undefined}
+          rightQuaternion={phase === 'demo' || phase === 'done' ? rightDemoQ : rightInitialQ}
         />
       </div>
 

@@ -5,23 +5,20 @@ import { t } from '../i18n/i18n';
 import MRScene from '../components/MRScene';
 import { generateTrials } from '../data/trialGenerator';
 import { getShapeCubes } from '../data/experimentTrials';
-import { mirrorCubes } from '../utils/shapeUtils';
 import { getUserId, isInteractiveFeedbackDone } from '../utils/storage';
 import { createTrackball } from '../utils/trackball';
 import FeedbackDialog from '../components/FeedbackDialog';
 
 const ITI_MS = 350; // brief inter-trial blank so the new trial reads as new
 
+const Y_AXIS = new THREE.Vector3(0, 1, 0);
+
 function buildCubes(trial) {
   const base = getShapeCubes(trial.objectId);
-  const right = trial.isIdentical ? base : mirrorCubes(base);
+  const right = trial.isIdentical ? base : getShapeCubes(trial.objectId + '_mirror');
   const angle = (trial.rotationAngle * Math.PI) / 180;
-  const rotated = right.map(({ x, y, z }) => ({
-    x: x * Math.cos(angle) - z * Math.sin(angle),
-    y,
-    z: x * Math.sin(angle) + z * Math.cos(angle),
-  }));
-  return { leftCubes: base, rightCubes: rotated };
+  const rightInitialQ = new THREE.Quaternion().setFromAxisAngle(Y_AXIS, angle);
+  return { leftCubes: base, rightCubes: right, rightInitialQ };
 }
 
 export default function InteractiveTaskView() {
@@ -33,8 +30,13 @@ export default function InteractiveTaskView() {
   const [results, setResults] = useState([]);
   const [phase, setPhase] = useState('task'); // 'iti' | 'task'
 
-  // Shared rotation — ref only, no React state. MRObject reads ref.current in useFrame.
+  // Left object: pure user-drag quaternion
   const quaternionRef = useRef(new THREE.Quaternion());
+  // Right object: user-drag composed with the trial's initial Y-rotation offset.
+  // Using a ref so the stale setQ closure (captured once by the trackball)
+  // always reads the CURRENT initial offset, not the one from mount time.
+  const rightQuaternionRef = useRef(new THREE.Quaternion());
+  const rightInitialQRef = useRef(new THREE.Quaternion());
 
   const [dragging, setDragging] = useState(false);
   const sceneRef = useRef(null);
@@ -44,13 +46,31 @@ export default function InteractiveTaskView() {
   const [showFeedback, setShowFeedback] = useState(false);
 
   const trial = trials[index];
-  const { leftCubes, rightCubes } = buildCubes(trial);
+  const { leftCubes, rightCubes, rightInitialQ } = buildCubes(trial);
+
+  // Synchronously update refs during render when trial changes so there is
+  // never a frame where the right object shows at the wrong orientation.
+  // (useEffect fires after paint — too late, causes a visible 1-frame jump.)
+  const lastIndexRef = useRef(-1);
+  if (lastIndexRef.current !== index) {
+    lastIndexRef.current = index;
+    quaternionRef.current = new THREE.Quaternion();
+    rightInitialQRef.current = rightInitialQ.clone();
+    rightQuaternionRef.current = rightInitialQ.clone();
+  }
 
   // Trackball instance
   const tbRef = useRef(null);
 
   function getQ() { return quaternionRef.current; }
-  function setQ(q) { quaternionRef.current = q; } // ref only — no re-render
+  function setQ(q) {
+    // Left: pure drag quaternion
+    quaternionRef.current = q;
+    // Right: drag composed with the current trial's initial offset.
+    // Reads rightInitialQRef (not a closed-over value) so this works correctly
+    // even though the trackball captured this function once on mount.
+    rightQuaternionRef.current = q.clone().multiply(rightInitialQRef.current);
+  }
 
   // Create trackball once scene div is mounted
   const setSceneEl = useCallback((el) => {
@@ -79,8 +99,10 @@ export default function InteractiveTaskView() {
     setDragging(true);
   }
 
+  // Reset rotation for next trial — restore right to its initial offset
   function handleReset() {
     quaternionRef.current = new THREE.Quaternion();
+    rightQuaternionRef.current = rightInitialQRef.current.clone();
   }
 
   const recordAnswer = useCallback((response) => {
@@ -170,6 +192,7 @@ export default function InteractiveTaskView() {
           leftCubes={leftCubes}
           rightCubes={rightCubes}
           quaternionRef={quaternionRef}
+          rightQuaternionRef={rightQuaternionRef}
           highlight={dragging}
         />
       </div>

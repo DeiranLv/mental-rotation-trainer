@@ -6,6 +6,7 @@ import InteractiveTaskView from '../views/InteractiveTaskView';
 import SessionSummaryView from '../views/SessionSummaryView';
 import ModeSelectView from '../views/ModeSelectView';
 import DashboardView from '../views/DashboardView';
+import NotFoundView from '../views/NotFoundView';
 
 const routes = [
   { path: '/', element: <HomeView /> },
@@ -16,6 +17,7 @@ const routes = [
   { path: '/session-result', element: <SessionSummaryView /> },
   { path: '/mode-select', element: <ModeSelectView /> },
   { path: '/dashboard', element: <DashboardView /> },
+  { path: '*', element: <NotFoundView /> },
 ];
 
 export default routes;

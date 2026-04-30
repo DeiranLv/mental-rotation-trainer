@@ -1,7 +1,21 @@
 import { stimulusPool } from './stimulusPool';
 
-const ANGLES = [0, 45, 90, 135, 180];
-const TRIALS_PER_SESSION = 20; // 5 angles × 2 types × 2 reps
+// Only base shapes — filter out hardcoded mirror entries so we never
+// produce an objectId like 'shape_01_mirror' (which would then try to
+// look up 'shape_01_mirror_mirror' and throw).
+const baseShapes = stimulusPool.filter((s) => !s.id.endsWith('_mirror'));
+// Difficulty tiers — Shepard & Metzler (1971) equal 60° thirds.
+// Random integer angle picked within [min, max] per trial.
+// Counts: 7 easy + 7 medium + 6 hard = 20 trials, matching the fixed experiment ratio.
+const TIERS = [
+  { label: 'easy',   min:  0, max:  60, count: 7 },
+  { label: 'medium', min: 61, max: 120, count: 7 },
+  { label: 'hard',   min: 121, max: 180, count: 6 },
+];
+
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 /**
  * Fisher-Yates shuffle (in-place).
@@ -24,14 +38,21 @@ function shuffle(arr) {
  * @returns {Array<{trialOrder, objectId, rotationAngle, isIdentical}>}
  */
 export function generateTrials() {
+  // Build one trial per slot, random angle within tier, balanced same/diff.
+  // Pre-assign exactly 10 same + 10 different, then shuffle together with angles.
+  const identicals = shuffle([...Array(10).fill(true), ...Array(10).fill(false)]);
+  let idx = 0;
   const trials = [];
 
-  ANGLES.forEach((angle) => {
-    // 2 same + 2 different per angle
-    [true, true, false, false].forEach((isIdentical) => {
-      const shape = stimulusPool[Math.floor(Math.random() * stimulusPool.length)];
-      trials.push({ objectId: shape.id, rotationAngle: angle, isIdentical });
-    });
+  TIERS.forEach(({ min, max, count }) => {
+    for (let i = 0; i < count; i++) {
+      const shape = baseShapes[Math.floor(Math.random() * baseShapes.length)];
+      trials.push({
+        objectId: shape.id,
+        rotationAngle: randInt(min, max),
+        isIdentical: identicals[idx++],
+      });
+    }
   });
 
   shuffle(trials);
@@ -46,10 +67,15 @@ export function generateTrials() {
  * @returns {Array<{trialOrder, objectId, rotationAngle, isIdentical, isPractice}>}
  */
 export function generatePracticeTrials() {
-  const practiceAngles = [0, 90, 180];
+  // One practice trial per tier, random angle within range
+  const practiceAngles = [
+    randInt(0,  60),  // easy
+    randInt(61, 120), // medium
+    randInt(121, 180), // hard
+  ];
   return practiceAngles.map((angle, i) => {
-    const shape = stimulusPool[Math.floor(Math.random() * stimulusPool.length)];
-    return {
+    const shape = baseShapes[Math.floor(Math.random() * baseShapes.length)];
+      return {
       trialOrder: i + 1,
       objectId: shape.id,
       rotationAngle: angle,

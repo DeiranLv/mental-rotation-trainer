@@ -20,7 +20,6 @@ const AMBER    = '#f59e0b';
 const MUTED    = '#64748b';
 
 const MODE_LABEL = { experiment: 'Eksperiments', repeat: 'Atkārtots', interactive: 'Interaktīvs' };
-const ANGLES = [0, 45, 90, 135, 180];
 
 function formatDate(ts) {
   if (!ts) return '';
@@ -106,14 +105,22 @@ export default function DashboardView() {
   const selectedIndex = sessions.indexOf(selectedSession);
   const selectedName = `S${selectedIndex + 1}`;
 
-  // Accuracy by angle — all trials for the selected session (outliers included;
-  // outlier filtering only makes sense for RT averages, not accuracy counts).
+  // Accuracy by difficulty tier — groups any angle into easy/medium/hard by value.
+  // Works for both fixed-experiment angles and randomly generated angles.
+  const TIER_DEFS = [
+    { label: 'Viegls (0–60°)',    min:  0, max:  60 },
+    { label: 'Vidējs (61–120°)',  min: 61, max: 120 },
+    { label: 'Grūts (121–180°)', min: 121, max: 180 },
+  ];
   const angleTrials = trials.filter((tr) => tr.sessionId === selectedSession.id);
-  const angleData = ANGLES.map((angle) => {
-    const subset = angleTrials.filter((tr) => Number(tr.rotationAngle) === angle);
+  const angleData = TIER_DEFS.map(({ label, min, max }) => {
+    const subset = angleTrials.filter((tr) => {
+      const a = Number(tr.rotationAngle);
+      return a >= min && a <= max;
+    });
     const correct = subset.filter((tr) => tr.isCorrect).length;
     return {
-      angle: `${angle}°`,
+      angle: label,
       accuracy: subset.length ? Math.round((correct / subset.length) * 100) : null,
       count: subset.length,
     };
@@ -135,9 +142,14 @@ export default function DashboardView() {
     <div className="dashboard">
       <div className="dash-header">
         <h1>{t('dashboard.title')}</h1>
-        <button className="btn-outline" onClick={() => navigate('/')}>
-          {t('nav.home')}
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button className="btn-outline" onClick={() => navigate('/instructions')}>
+            {t('nav.instructions')}
+          </button>
+          <button className="btn-outline" onClick={() => navigate('/')}>
+            {t('nav.home')}
+          </button>
+        </div>
       </div>
 
       {/* ── KPI row ── */}
@@ -203,7 +215,7 @@ export default function DashboardView() {
 
         {/* Accuracy by rotation angle */}
         <div className="chart-card">
-          <h2 className="chart-title">Precizitāte pēc rotācijas leņķa</h2>
+          <h2 className="chart-title">Precizitāte pēc grūtības pakāpes</h2>
           <p className="chart-sub">
             Sesija {selectedName} · {MODE_LABEL[selectedSession.mode] ?? selectedSession.mode}
           </p>

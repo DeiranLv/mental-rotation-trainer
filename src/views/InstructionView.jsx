@@ -2,11 +2,10 @@ import { useNavigate } from 'react-router-dom';
 import { t } from '../i18n/i18n';
 import MRScene from '../components/MRScene';
 import { stimulusPool } from '../data/stimulusPool';
-import { mirrorCubes } from '../utils/shapeUtils';
 
-// Use shape_01 for the visual examples
-const exampleShape = stimulusPool[0].cubes;
-const mirroredShape = mirrorCubes(exampleShape);
+// Use shape_01 / shape_01_mirror for the visual examples
+const exampleShape = stimulusPool.find((s) => s.id === 'shape_01').cubes;
+const mirroredShape = stimulusPool.find((s) => s.id === 'shape_01_mirror').cubes;
 
 export default function InstructionView() {
   const navigate = useNavigate();
