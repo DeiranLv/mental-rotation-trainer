@@ -68,6 +68,29 @@ Open `http://localhost:5173` in your browser.
 
 Deployed via Vercel with automatic deploys on push to `main`. Environment variables set in Vercel project settings.
 
+## Repository structure
+
+```
+mental-rotation-trainer/
+├── src/                    # React application source
+│   ├── components/         # Shared 3D and UI components
+│   ├── data/               # Stimulus pool, experiment trials, trial generator
+│   ├── firebase/           # Firestore service, Firebase config & auth
+│   ├── utils/              # Trackball, shape utils, localStorage helpers
+│   └── views/              # Route-level view components
+├── analysis/               # Data analysis (Python scripts, data, results)
+│   ├── scripts/            # 01_export_firebase.py → 04_visualise.py
+│   ├── data/               # Raw and clean CSV files (see analysis/README.md)
+│   ├── results/            # Generated tables and figures
+│   └── README.md           # Full guide: how to reproduce the analysis
+├── public/                 # Static assets
+├── vercel.json             # SPA rewrite rules (all routes → index.html)
+└── .env.example            # Firebase environment variable template
+```
+The repository contains the application source code, anonymized/processed research data, analysis scripts, and generated result figures/tables used in the thesis.
+
+For data collection methodology, analysis scripts, and results see [`analysis/README.md`](analysis/README.md).
+
 ## Author
 
 Jevgēnijs Locs  

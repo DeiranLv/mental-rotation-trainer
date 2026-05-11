@@ -27,3 +27,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Firebase service account keys — never commit real credentials
+*firebase-adminsdk*.json
+serviceAccountKey.json
+
+# Analysis data
+# Raw Firebase exports are excluded (regenerate with 01_export_firebase.py)
+# Clean/anonymized files ARE tracked (userId replaced with id-1, id-2, ...)
+analysis/data/sessions_raw.csv
+analysis/data/trials_raw.csv

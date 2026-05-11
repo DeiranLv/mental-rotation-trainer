@@ -1,0 +1,4 @@
+mode,n_sessions,mean_acc,sd_acc,mean_RT,sd_RT
+experiment,44,0.868,0.097,5876.614,2719.867
+interactive,13,0.881,0.09,6576.846,5382.687
+repeat,6,0.783,0.163,3665.333,2635.531
