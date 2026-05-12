@@ -125,14 +125,17 @@ def fig_h2_platform_vs_qp(participants: pd.DataFrame) -> None:
         print("  H2 figure skipped — not enough overlapping data yet.")
         return
 
-    slope, intercept, r, p, _ = stats.linregress(df[QP_MRT_COL], df["baseline_accuracy"])
+    rho, p = stats.spearmanr(df[QP_MRT_COL], df["baseline_accuracy"])
+
+    # Trend line via linregress (visual only — correlation is Spearman)
+    slope, intercept, *_ = stats.linregress(df[QP_MRT_COL], df["baseline_accuracy"])
     x_line = np.linspace(df[QP_MRT_COL].min(), df[QP_MRT_COL].max(), 100)
 
     fig, ax = plt.subplots(figsize=(5, 4))
     ax.scatter(df[QP_MRT_COL], df["baseline_accuracy"] * 100,
                color=ACCENT, alpha=0.7, edgecolors="white", linewidths=0.5, s=60)
     ax.plot(x_line, (slope * x_line + intercept) * 100, "--", color="#374151",
-            linewidth=1.2, label=f"r = {r:.2f}  p = {p:.3f}")
+            linewidth=1.2, label=f"Spīrmens ρ = {rho:.2f},  p = {p:.3f}")
     ax.set_xlabel("QP MRT rezultāts (0–48)")
     ax.set_ylabel("Platformas precizitāte (%)")
     ax.set_title("H2: Platforma vs aprobētais MRT tests")
